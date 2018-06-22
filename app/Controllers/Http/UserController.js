@@ -50,7 +50,19 @@ class UserController {
    * Display a single user.
    * GET users/:id
    */
-  async show ({ params, request, response, view }) {
+  async show ({ params, request, response, view, auth }) {
+    const head = request.header('Authorization')
+    try {
+      if(await auth.check()){
+        var user = await auth.getUser();
+        
+      }
+    } catch (error) {
+      response.send('Missing or invalid jwt token')
+    }
+    //return head;
+
+
   }
 
   /**
