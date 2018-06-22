@@ -55,7 +55,7 @@ class UserController {
     try {
       if(await auth.check()){
         var user = await auth.getUser();
-        
+        return user.estadistica().fetch();
       }
     } catch (error) {
       response.send('Missing or invalid jwt token')
