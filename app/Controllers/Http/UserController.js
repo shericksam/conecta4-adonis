@@ -27,12 +27,13 @@ class UserController {
     var user = request.body.username;
     var pass = request.body.password;
    //  return userQ;
-    const us = await auth.attempt(user, pass);
-    const userO = await User.query().where('username','=',user).first();
-    return response.json({
-      tokenObj:us,
-      id:userO.id}
-      ,200);
+   const us = await auth.attempt(user, pass);
+   const userO = await User.query().where('username','=',user).first();
+   return response.json({
+     tokenObj:us,
+     id:userO.id}
+     ,200);
+    //const user = await User.find(1);    
   }
 
   /**
