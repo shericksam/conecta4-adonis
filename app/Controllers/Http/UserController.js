@@ -23,27 +23,34 @@ class UserController {
   }
 
   async login({request, auth,response }){
+
     var user = request.body.username;
     var pass = request.body.password;
    //  return userQ;
-    //const user = await User.find(1);
     const us = await auth.attempt(user, pass);
-    return response.json(us,200);
+    const userO = await User.query().where('username','=',user).first();
+    return response.json({
+      tokenObj:us,
+      id:userO.id}
+      ,200);
   }
 
   /**
    * Create/save a new user.
    * POST users
    */
-  async store ({ request, response }) {
+  async store ({ request, response ,auth}) {
     console.log("WTF");
     const user = new User();
     user.username = request.body.username;
     user.password = request.body.password;
     await user.save();
+    const us = await auth.attempt(request.body.username, request.body.password);
+    const userO = await User.query().where('username','=',request.body.username).first();
     return response.json({
-      mas:"Usuario creado!"
-    },201);
+      tokenObj:us,
+      id:userO.id}
+      ,200);
   }
 
   /**
@@ -55,7 +62,10 @@ class UserController {
     try {
       if(await auth.check()){
         var user = await auth.getUser();
-        return user.estadistica().fetch();
+        return response.json({
+          user:user,
+          estadisticas:user.estadistica().fetch()
+        });
       }
     } catch (error) {
       response.send('Missing or invalid jwt token')

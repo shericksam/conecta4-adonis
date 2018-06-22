@@ -17,13 +17,13 @@ class PartidaController {
   }
 
   onJoin(data){
-    console.log(GameController.getUsers());
     if(!GameController.addPlayer(data.user)){
       //this.socket.close();
     }
     if(GameController.isGameReady()){
       this.socket.broadcastToAll('ready-game',GameController.currentTurn());
     }
+    console.log(GameController.getUsers());
   }
 
   onConfirm(){
