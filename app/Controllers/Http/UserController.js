@@ -11,6 +11,7 @@ class UserController {
    * GET users
    */
   async index ({ request, response, view }) {
+    
   }
 
   /**
@@ -19,6 +20,15 @@ class UserController {
    */
   async create ({ request, response, view }) {
     
+  }
+
+  async login({request, auth,response }){
+    var user = request.body.username;
+    var pass = request.body.password;
+   //  return userQ;
+    //const user = await User.find(1);
+    const us = await auth.attempt(user, pass);
+    return response.json(us,200);
   }
 
   /**
@@ -55,6 +65,7 @@ class UserController {
    * PUT or PATCH users/:id
    */
   async update ({ params, request, response }) {
+
   }
 
   /**
