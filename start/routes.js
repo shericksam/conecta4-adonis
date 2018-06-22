@@ -21,4 +21,6 @@ Route.get('/', ({ request }) => {
 
 Route.get('/users','UsersController')
 Route.resource("users","UserController");
+Route.post("/login","UserController.login");
+
 

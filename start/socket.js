@@ -15,4 +15,4 @@
 
 const Ws = use('Ws')
 
-Ws.channel('chat', 'PartidaController')
+Ws.channel('conecta', 'PartidaController')

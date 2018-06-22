@@ -7,11 +7,14 @@ class GameController {
 
     constructor(){
         this.mat = new Array2d(6,7,0);
-        
     }
 
     static isGameReady(){
         return (players.length > 1)?true:false;
+    }
+
+    static cleanGame(){
+        mat = new Array2d(6,7,0);
     }
 
     static getOpponent(user){
@@ -34,7 +37,8 @@ class GameController {
 
     // Agregar a los jugadores
     static addPlayer(user){
-        if(!players.indexOf(user) && players.length < 2){
+        //players.push(user);
+        if(players.indexOf(user) < 0 && players.length < 2){
             players.push(user);
             return true;
         }

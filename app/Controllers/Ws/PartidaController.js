@@ -17,9 +17,13 @@ class PartidaController {
   }
 
   onJoin(data){
-    /*if(!GameController.addUser(data.user)){
+    console.log(GameController.getUsers());
+    if(!GameController.addPlayer(data.user)){
       //this.socket.close();
-    }*/
+    }
+    if(GameController.isGameReady()){
+      this.socket.broadcastToAll('ready-game',GameController.currentTurn());
+    }
   }
 
   onConfirm(){
@@ -39,17 +43,20 @@ class PartidaController {
        y:int -> coordenada y
      }
      */
-    //if(!GameController.isGameReady()){
-      //return;
-    //}
+    if(!GameController.isGameReady()){
+      return;
+    }
 
     if(GameController.get(data.x,data.y) == 0){
       GameController.set(data.x,data.y,data.user);
+
       this.socket.broadcast("new-selection",data);
+      this.socket.broadcastToAll("current-turn",GameController.currentTurn());
 
       if(this.checkWinner(data.user)){ 
-          this.saveStatistics(data.user,null);
+          GameController.cleanGame();
           this.socket.broadcastToAll("winner",data);
+          this.saveStatistics(data.user,null);
           console.log("GANO?: ",true);
       }else{
         console.log("GANO?: ",false);
