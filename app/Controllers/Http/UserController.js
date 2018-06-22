@@ -44,6 +44,13 @@ class UserController {
     const user = new User();
     user.username = request.body.username;
     user.password = request.body.password;
+    if(!request.body.username || !request.body.password){
+      return response.badRequest({message:"Parametros invalidos."});
+    }
+    const userExists = await User.query().where('username','=',request.body.username).first();
+    if(userExists){
+      return response.badRequest({message:"El usuario ya existe!"});
+    }
     await user.save();
     const us = await auth.attempt(request.body.username, request.body.password);
     const userO = await User.query().where('username','=',request.body.username).first();
