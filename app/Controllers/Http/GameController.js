@@ -15,20 +15,41 @@ class GameController {
 
     static cleanGame(){
         mat = new Array2d(6,7,0);
+        players = [];
+        turn = 0;
     }
 
-    static getOpponent(user){
-        
+    static cleanArray(){
+        mat = new Array2d(6,7,0);
+    }
+
+    static getPlayer(userid){
+        for (let i = 0; i < players.length; i++) {
+            if(players[i].user == userid)
+                return players[i];
+        }
     }
 
     static currentTurn(){
         if(turn == 0){
-            return Math.floor(Math.random() * 2) + 1;
+            turn = players[Math.floor(Math.random() * 2)].user;
+            return players[Math.floor(Math.random() * 2)];
         }
-        if(turn == players[0]){
-            return players[0]
+        if(turn == players[0].user){
+            turn = players[1]
+            return players[1];
         }
-        return players[1];
+        turn = players[0].user;
+        return players[0];
+    }
+
+    static turnBasedInCurrent(userInTurn){
+        if(userInTurn == players[0].user){
+            turn = players[1].user
+            return players[1];
+        }
+        turn = players[0].user;
+        return  players[0];
     }
 
     static get(row,col){
@@ -37,12 +58,22 @@ class GameController {
 
     // Agregar a los jugadores
     static addPlayer(user){
-        //players.push(user);
-        if(players.indexOf(user) < 0 && players.length < 2){
-            players.push(user);
-            return true;
+        var exist = false;
+        var uex;
+        players.forEach(element => {
+            if(element.user == user){
+                exist = true;
+                uex = element;
+            }
+        });
+        if(!exist && players.length < 2){
+            var u = {user:user,player:(players.length == 0)?1:2}
+            players.push(u);
+            return u;
+        }else{
+            return uex;
         }
-        return false;
+        return null;
     }
     static getUsers(){
         return players;

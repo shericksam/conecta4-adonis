@@ -17,17 +17,34 @@ class PartidaController {
   }
 
   onJoin(data){
-    if(!GameController.addPlayer(data.user)){
+    var user = GameController.addPlayer(data.user);
+    if(user != null){
+      console.log("USUARIO SOLICITADO: ",GameController.getUsers());
       //this.socket.close();
+      this.socket.emit('joined',user);
     }
     if(GameController.isGameReady()){
-      this.socket.broadcastToAll('ready-game',GameController.currentTurn());
+      GameController.cleanArray();
+      this.socket.broadcastToAll('ready-game',{
+        current:GameController.currentTurn(),
+        players:GameController.getUsers()
+       }
+      );
     }
     console.log(GameController.getUsers());
   }
 
   onConfirm(){
     
+  }
+  onDisconnect(){
+    console.log("SE DESCONECTOOO!!!");
+  }
+
+  disconnect(){
+    GameController.cleanGame();
+    var data = {message:"usuario desconectado, recarga la pagina!"}
+    this.socket.broadcastToAll("end-game",data);
   }
 
   onSelected(data){
@@ -51,12 +68,15 @@ class PartidaController {
       GameController.set(data.x,data.y,data.user);
 
       this.socket.broadcast("new-selection",data);
-      this.socket.broadcastToAll("current-turn",GameController.currentTurn());
-
+      
+      this.socket.broadcastToAll("current-turn",GameController.turnBasedInCurrent(data.user));
+      
       if(this.checkWinner(data.user)){ 
+          var loser = GameController.turnBasedInCurrent(data.user);
+          var winner = GameController.getPlayer(data.user);
           GameController.cleanGame();
-          this.socket.broadcastToAll("winner",data);
-          this.saveStatistics(data.user,null);
+          this.socket.broadcastToAll("winner",winner);
+          this.saveStatistics(data.user,loser.user);
           console.log("GANO?: ",true);
       }else{
         console.log("GANO?: ",false);
@@ -73,6 +93,7 @@ class PartidaController {
 
   async saveStatistics(winner,loser){
     console.log("WINNER",winner);
+    console.log("LOSER",loser);
     try{
       const win = await Statistic.findOrCreate(
         { fk_user: winner }
@@ -84,8 +105,8 @@ class PartidaController {
   
       win.victorias = win.victorias+1;
       lose.derrotas = lose.derrotas+1;
-      win.save();
-      lose.save();
+      await win.save();
+      await lose.save();
     }catch(e){
       console.log(e);
     }

@@ -44,6 +44,7 @@ class UserController {
     const user = new User();
     user.username = request.body.username;
     user.password = request.body.password;
+    
     if(!request.body.username || !request.body.password){
       return response.badRequest({message:"Parametros invalidos."});
     }
@@ -68,14 +69,17 @@ class UserController {
     const head = request.header('Authorization')
     try {
       if(await auth.check()){
-        var user = await auth.getUser();
+        var u = await User.find(params.id);
+        //var user = await auth.getUser();
+        u = (u)?u:null;
+        const ets = await u.estadistica().fetch();
         return response.json({
-          user:user,
-          estadisticas:user.estadistica().fetch()
+          user:u,
+          estadisticas:ets
         });
       }
     } catch (error) {
-      response.send('Missing or invalid jwt token')
+      response.send('Missing or invalid jwt token: '+error)
     }
     //return head;
 
