@@ -74,10 +74,15 @@ class PartidaController {
       if(this.checkWinner(data.user)){ 
           var loser = GameController.turnBasedInCurrent(data.user);
           var winner = GameController.getPlayer(data.user);
-          GameController.cleanGame();
+          GameController.cleanArray();
           this.socket.broadcastToAll("winner",winner);
           this.saveStatistics(data.user,loser.user);
           console.log("GANO?: ",true);
+          this.socket.broadcastToAll('ready-game',{
+            current:GameController.currentTurn(),
+            players:GameController.getUsers()
+           }
+          );
       }else{
         console.log("GANO?: ",false);
       }
